@@ -38,7 +38,7 @@ npx wrangler secret put GEMINI_API_KEY
 ALLOWED_ORIGINS = "https://DenysLentsov.github.io,http://localhost:8765,http://127.0.0.1:8765"
 ```
 
-If the repo is `TermRoulette`, the origin is usually `https://github.com/DenysLentsov/TermRoulette.git` — match the exact `Origin` header your browser sends.
+If the repo is `TermRoulette`, the origin is usually `https://denyslentsov.github.io/TermRoulette/` — match the exact `Origin` header your browser sends.
 
 5. Deploy the worker:
 
@@ -52,7 +52,7 @@ Wrangler prints your worker URL, e.g. `https://term-roulette-api.denyslentsov.wo
 
 ```javascript
 const SITE_CONFIG = {
-  apiProxyUrl: " https://term-roulette-api.denyslentsov.workers.dev",
+  apiProxyUrl: "https://term-roulette-api.denyslentsov.workers.dev",
 };
 ```
 
@@ -71,7 +71,7 @@ npm run dev                        # http://localhost:8787
 Terminal 2 — serve the site:
 
 ```bash
-python3 -m http.server 8765
+python3 -m http.server 8766
 ```
 
 For local testing, point `site-config.js` at the dev worker:
