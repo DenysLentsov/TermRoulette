@@ -11,15 +11,21 @@
 </head>
 <body>
   <main class="stage">
-    <div class="glass-frame">
-      <div class="glass-highlight" aria-hidden="true"></div>
-      <div class="roulette-viewport">
-        <div class="roulette-strip" id="roulette-strip"></div>
+    <div class="roulette-stack">
+      <div class="glass-frame">
+        <div class="glass-highlight" aria-hidden="true"></div>
+        <div class="roulette-viewport">
+          <div class="roulette-strip" id="roulette-strip"></div>
+        </div>
+      </div>
+      <div class="term-info" id="term-info" aria-live="polite" hidden>
+        <p class="term-info-text" id="term-info-text"></p>
       </div>
     </div>
     <p class="hint" id="hint">PRESS SPACE</p>
   </main>
   <script src="terms.js"></script>
+  <script src="site-config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

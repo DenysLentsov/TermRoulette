@@ -5,12 +5,15 @@
   const viewport = document.querySelector(".roulette-viewport");
   const hint = document.getElementById("hint");
   const stage = document.querySelector(".stage");
+  const termInfo = document.getElementById("term-info");
+  const termInfoText = document.getElementById("term-info-text");
 
   let isSpinning = false;
   let lastTerm = null;
   let hasSpun = false;
   let currentTargetIndex = -1;
   let animationId = null;
+  let infoRequestId = 0;
   let rowHeight = 88;
   let contentWidth = 0;
 
@@ -42,7 +45,7 @@
   }
 
   function easeOutCinematic(t) {
-    return 1 - Math.pow(1 - t, 4.8);
+    return 1 - Math.pow(1 - t, 3);
   }
 
   function centerOffsetForIndex(index) {
@@ -94,7 +97,7 @@
     }
   }
 
-  function createTermItem(text) {
+  function createTermItem(text, shouldFit) {
     const item = document.createElement("div");
     item.className = "term-item";
     item.style.height = rowHeight + "px";
@@ -103,21 +106,40 @@
     textEl.className = "term-text";
     item.appendChild(textEl);
 
-    fitTermText(textEl, text);
+    if (shouldFit) {
+      fitTermText(textEl, text);
+    } else {
+      textEl.textContent = text;
+      let fontSize = Math.min(getBaseFontSize(), 30);
+      textEl.style.fontSize = fontSize + "px";
+      item.classList.add("single-line");
+
+      if (textEl.scrollWidth > contentWidth) {
+        fontSize = 18;
+        textEl.style.fontSize = fontSize + "px";
+      }
+
+      if (textEl.scrollWidth > contentWidth) {
+        item.classList.remove("single-line");
+        item.classList.add("multi-line");
+        textEl.style.fontSize = "16px";
+      }
+    }
+
     return item;
   }
 
   function buildReel(targetTerm) {
     const pool = TERMS.filter((term) => term !== targetTerm);
-    const laps = 8 + Math.floor(Math.random() * 8);
+    const laps = 3 + Math.floor(Math.random() * 2);
     const reel = [];
 
     for (let i = 0; i < laps; i++) {
       reel.push(...shuffle(pool));
     }
 
-    const leadIn = shuffle(pool).slice(0, Math.floor(pool.length * 0.55));
-    reel.push(...leadIn, targetTerm, ...shuffle(pool).slice(0, 6));
+    const leadIn = shuffle(pool).slice(0, Math.floor(pool.length * 0.3));
+    reel.push(...leadIn, targetTerm, ...shuffle(pool).slice(0, 4));
 
     const targetIndex = reel.lastIndexOf(targetTerm);
     return { reel, targetIndex };
@@ -187,13 +209,15 @@
     }, 420);
   }
 
-  function renderReel(reel) {
+  function renderReel(reel, targetIndex) {
     strip.innerHTML = "";
     strip.style.transform = "translateY(0px)";
 
-    reel.forEach(function (term) {
-      strip.appendChild(createTermItem(term));
+    const fragment = document.createDocumentFragment();
+    reel.forEach(function (term, index) {
+      fragment.appendChild(createTermItem(term, index === targetIndex));
     });
+    strip.appendChild(fragment);
   }
 
   function cancelAnimation() {
@@ -203,10 +227,96 @@
     }
   }
 
+  function clearTermInfo() {
+    infoRequestId += 1;
+    termInfo.hidden = true;
+    termInfo.classList.remove("visible", "loading", "error");
+    termInfoText.textContent = "";
+  }
+
+  function showTermInfoLoading() {
+    termInfo.hidden = false;
+    termInfo.classList.add("loading");
+    termInfo.classList.remove("error", "visible");
+    termInfoText.textContent = "Loading…";
+    requestAnimationFrame(function () {
+      termInfo.classList.add("visible");
+    });
+  }
+
+  function showTermInfoResult(text) {
+    termInfo.hidden = false;
+    termInfo.classList.remove("loading", "error");
+    termInfoText.textContent = text;
+    requestAnimationFrame(function () {
+      termInfo.classList.add("visible");
+    });
+  }
+
+  function showTermInfoError(message) {
+    termInfo.hidden = false;
+    termInfo.classList.remove("loading");
+    termInfo.classList.add("error", "visible");
+    termInfoText.textContent = message;
+  }
+
+  function getProxyUrl() {
+    if (typeof SITE_CONFIG === "undefined") {
+      return null;
+    }
+
+    const url = SITE_CONFIG.apiProxyUrl;
+    if (!url || url.includes("YOUR_SUBDOMAIN")) {
+      return null;
+    }
+
+    return url.replace(/\/$/, "");
+  }
+
+  async function fetchTermInfo(term) {
+    const proxyUrl = getProxyUrl();
+    if (!proxyUrl) {
+      showTermInfoError("Set apiProxyUrl in site-config.js");
+      return;
+    }
+
+    const requestId = ++infoRequestId;
+    showTermInfoLoading();
+
+    try {
+      const response = await fetch(proxyUrl + "/explain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ term: term }),
+      });
+
+      if (requestId !== infoRequestId) return;
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error("Proxy error " + response.status + ": " + errorBody);
+      }
+
+      const data = await response.json();
+      const text = data.text?.trim();
+
+      if (!text) {
+        throw new Error("Empty response from proxy");
+      }
+
+      showTermInfoResult(text);
+    } catch (error) {
+      if (requestId !== infoRequestId) return;
+      showTermInfoError("Could not load explanation. Try again in a moment.");
+      console.error(error);
+    }
+  }
+
   function spin() {
     if (isSpinning) return;
 
     cancelAnimation();
+    clearTermInfo();
     isSpinning = true;
     stage.classList.add("spinning");
     hint.classList.add("hidden");
@@ -216,11 +326,11 @@
 
     const targetTerm = pickRandomTerm();
     const built = buildReel(targetTerm);
-    renderReel(built.reel);
+    renderReel(built.reel, built.targetIndex);
 
     const endY = centerOffsetForIndex(built.targetIndex);
     const startY = centerOffsetForIndex(0);
-    const duration = 2500 + Math.random() * 1500;
+    const duration = 3800 + Math.random() * 700;
     const startTime = performance.now();
 
     strip.style.transform = "translateY(" + startY + "px)";
@@ -250,9 +360,11 @@
       isSpinning = false;
       stage.classList.remove("spinning");
       animationId = null;
+
+      fetchTermInfo(targetTerm);
     }
 
-    animationId = requestAnimationFrame(frame);
+    frame(startTime);
   }
 
   function refitAllTerms() {
