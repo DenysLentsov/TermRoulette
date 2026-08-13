@@ -6,4 +6,4 @@ compatibility_date = "2024-08-01"
 GEMINI_MODEL = "gemini-3.5-flash-lite"
 # Comma-separated origins allowed to call this worker (your GitHub Pages URL + localhost).
 # Example: ALLOWED_ORIGINS = "https://github.com/DenysLentsov/TermRoulette.git,http://localhost:8765"
-ALLOWED_ORIGINS = "http://localhost:8765,http://127.0.0.1:8765,http://localhost:8787"
+ALLOWED_ORIGINS = "https://github.com/DenysLentsov/TermRoulette.git,http://localhost:8765,http://127.0.0.1:8765,http://localhost:8787"

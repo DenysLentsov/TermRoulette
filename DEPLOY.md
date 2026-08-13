@@ -35,10 +35,10 @@ npx wrangler secret put GEMINI_API_KEY
 4. Allow your GitHub Pages origin in [`worker/wrangler.toml`](worker/wrangler.toml):
 
 ```toml
-ALLOWED_ORIGINS = "https://yourname.github.io,http://localhost:8765,http://127.0.0.1:8765"
+ALLOWED_ORIGINS = "https://DenysLentsov.github.io,http://localhost:8765,http://127.0.0.1:8765"
 ```
 
-If the repo is `term-roulette`, the origin is usually `https://yourname.github.io` (user/org pages) or `https://yourname.github.io/term-roulette` — match the exact `Origin` header your browser sends.
+If the repo is `TermRoulette`, the origin is usually `https://github.com/DenysLentsov/TermRoulette.git` — match the exact `Origin` header your browser sends.
 
 5. Deploy the worker:
 
@@ -46,13 +46,13 @@ If the repo is `term-roulette`, the origin is usually `https://yourname.github.i
 npm run deploy
 ```
 
-Wrangler prints your worker URL, e.g. `https://term-roulette-api.your-subdomain.workers.dev`.
+Wrangler prints your worker URL, e.g. `https://term-roulette-api.denyslentsov.workers.dev`.
 
 6. Set that URL in [`site-config.js`](../site-config.js):
 
 ```javascript
 const SITE_CONFIG = {
-  apiProxyUrl: "https://term-roulette-api.your-subdomain.workers.dev",
+  apiProxyUrl: " https://term-roulette-api.denyslentsov.workers.dev",
 };
 ```
 
