@@ -395,7 +395,18 @@
     triggerSpin();
   });
 
-  document.getElementById("glass-frame").addEventListener("click", triggerSpin);
+  const trigger = document.querySelector(".glass-frame");
+  
+  trigger.addEventListener("click", triggerSpin);
+  
+  trigger.addEventListener(
+    "touchend",
+    function (event) {
+      event.preventDefault();
+      triggerSpin();
+    },
+    { passive: false }
+  );
 
   window.addEventListener("resize", function () {
     if (isSpinning) return;
