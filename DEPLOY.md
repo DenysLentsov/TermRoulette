@@ -80,7 +80,7 @@ For local testing, point `site-config.js` at the dev worker:
 apiProxyUrl: "http://localhost:8787",
 ```
 
-Open `http://localhost:8765`.
+Open `http://localhost:8766`.
 
 ## Security notes
 
