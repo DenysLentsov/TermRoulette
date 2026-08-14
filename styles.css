@@ -37,6 +37,7 @@ body {
 }
 
 .glass-frame {
+  cursor: pointer;
   position: relative;
   width: clamp(320px, 76vw, 1200px);
   height: clamp(160px, 20vh, 220px);
