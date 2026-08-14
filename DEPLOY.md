@@ -35,7 +35,7 @@ npx wrangler secret put GEMINI_API_KEY
 4. Allow your GitHub Pages origin in [`worker/wrangler.toml`](worker/wrangler.toml):
 
 ```toml
-ALLOWED_ORIGINS = "https://DenysLentsov.github.io,http://localhost:8765,http://127.0.0.1:8765"
+ALLOWED_ORIGINS = "https://denyslentsov.github.io,http://localhost:8766,http://127.0.0.1:8766"
 ```
 
 If the repo is `TermRoulette`, the origin is usually `https://denyslentsov.github.io/TermRoulette/` — match the exact `Origin` header your browser sends.

@@ -20,4 +20,4 @@ head_sampling_rate = 1
 [vars]
 GEMINI_MODEL = "gemini-3.5-flash-lite"
 # Comma-separated origins allowed to call this worker (your GitHub Pages URL + localhost).
-ALLOWED_ORIGINS = "https://denyslentsov.github.io/TermRoulette/,http://localhost:8766,http://127.0.0.1:8766,http://localhost:8787"
+ALLOWED_ORIGINS = "https://denyslentsov.github.io,http://localhost:8766,http://127.0.0.1:8766"
