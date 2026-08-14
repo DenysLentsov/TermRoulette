@@ -131,15 +131,15 @@
 
   function buildReel(targetTerm) {
     const pool = TERMS.filter((term) => term !== targetTerm);
-    const laps = 3 + Math.floor(Math.random() * 2);
+    const laps = 1 + Math.floor(Math.random() * 2);
     const reel = [];
 
     for (let i = 0; i < laps; i++) {
       reel.push(...shuffle(pool));
     }
 
-    const leadIn = shuffle(pool).slice(0, Math.floor(pool.length * 0.3));
-    reel.push(...leadIn, targetTerm, ...shuffle(pool).slice(0, 4));
+    const leadIn = shuffle(pool).slice(0, Math.floor(pool.length * 0.15));
+    reel.push(...leadIn, targetTerm, ...shuffle(pool).slice(0, 2));
 
     const targetIndex = reel.lastIndexOf(targetTerm);
     return { reel, targetIndex };
@@ -330,7 +330,7 @@
 
     const endY = centerOffsetForIndex(built.targetIndex);
     const startY = centerOffsetForIndex(0);
-    const duration = 3800 + Math.random() * 700;
+    const duration = 2200 + Math.random() * 600;
     const startTime = performance.now();
 
     strip.style.transform = "translateY(" + startY + "px)";
@@ -384,12 +384,18 @@
     }
   }
 
+  function triggerSpin() {
+    if (isSpinning) return;
+    spin();
+  }
+
   window.addEventListener("keydown", function (event) {
     if (event.code !== "Space") return;
     event.preventDefault();
-    if (isSpinning) return;
-    spin();
+    triggerSpin();
   });
+
+  document.getElementById("glass-frame").addEventListener("click", triggerSpin);
 
   window.addEventListener("resize", function () {
     if (isSpinning) return;
